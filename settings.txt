@@ -1,0 +1,13 @@
+[API]
+api_key = 
+api_secret = 
+
+
+
+[PostgreSQL]
+database = 
+user = 
+password = 
+host =   # IPv4 address or localhost or 127.0.0.1
+port =   # e.g. 5432
+
