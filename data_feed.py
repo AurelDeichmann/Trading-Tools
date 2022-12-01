@@ -120,7 +120,7 @@ class DataFeed:
                     # partially filled, and generally open orders which are 
                     # already in the system are updated
                     else: 
-                        self.order[instrument_name][order_id] = data
+                        self.orders[instrument_name][order_id] = data
                         
                 else: # open orders which are not in the system yet
                     self.orders[instrument_name][order_id] = data
