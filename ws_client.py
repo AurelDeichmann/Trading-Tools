@@ -8,6 +8,8 @@ import hashlib
 import threading
 import pytz
 import logging
+import traceback
+import sys
 
 class WSClient:
     
@@ -111,7 +113,15 @@ class WSClient:
             self.shutdown()
         
     def on_error(self, placeholder, error):
-        print("ON_ERROR CALLED")
+        error_type, error_tb, tb = sys.exc_info()
+        filename, lineno, func_name, line = traceback.extract_tb(tb)[-1]
+        self.connected = False
+        self.error_counter += 1
+        self.logger.info("({}) - Error: {}. Closing Websocket connection and "
+                         "reconnecting shortly.".format(self.error_counter, 
+                                                        error))
+        self.logger.info("Error details: {}\n{}\n{}\n{}\n".format(
+            filename, lineno, func_name, line))
         self.connected = False
         self.error_counter += 1
         self.logger.info("({}) - Error: {}. Closing Websocket connection and "
