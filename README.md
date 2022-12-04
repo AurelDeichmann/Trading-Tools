@@ -26,6 +26,7 @@ Python packages:
 - websocket-client v1+
 - psycopg2
 - sqlalchemy
+- py-vollib-vectorized
 - Other standard libraries such as pandas, scipy, datetime, pytz, logging, threading, json etc.
 
 
