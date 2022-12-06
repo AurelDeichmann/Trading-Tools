@@ -143,6 +143,10 @@ class InputParser:
                 print("Delta hedging activated: {}".
                       format(self.delta_hedger.delta_hedging_activated))
             
+            elif x == "price":
+                print("Bid: {} --- Ask: {}".format(self.feed.fetch_btcusd_bbo(self.instrument, "bid"), 
+                                                   self.feed.fetch_btcusd_bbo(self.instrument, "ask")))            
+            
             elif x == "funds":
                 account = self.feed.get_account_data()
                 current_price = self.feed.fetch_btcusd_bbo(self.instrument, "bid")
@@ -318,7 +322,7 @@ class InputParser:
                 
                 elif len(spaces) == 1:
         
-                    if price:
+                    if price is not None:
                         amount = x[2:spaces[0]]
                     else:
                         amount = x[1:spaces[0]]
@@ -339,8 +343,8 @@ class InputParser:
                             or (side == "sell" and price >= self.feed.fetch_btcusd_bbo(self.instrument, "bid"))):
                             raise InvalidInput
                         
-                        price = int(price)
-                        trigger_price = "mark_price"
+                        trigger_price = int(price)
+                        trigger = "mark_price"
                         reduce_only = True
                         self.label_storage.append(self.label_counter)                        
                         self.label_counter += 1
@@ -348,6 +352,7 @@ class InputParser:
                                                             side, amount, 
                                                             order_type, label, 
                                                             price, 
+                                                            trigger=trigger, 
                                                             trigger_price=trigger_price, 
                                                             reduce_only=reduce_only)]
                         
