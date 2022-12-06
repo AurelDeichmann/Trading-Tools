@@ -15,8 +15,8 @@ class ApiMethods:
     def send_order(self, instrument=None, side=None, amount=None, 
                    order_type=None, label=None, price=None, time_in_force=None, 
                    max_show=None, post_only=None, reject_post_only=None, 
-                   reduce_only=None, trigger_price=None, trigger_offset=None, 
-                   advanced=None, mmp=None, valid_until=None):
+                   reduce_only=None, trigger=None, trigger_price=None, 
+                   trigger_offset=None, advanced=None, mmp=None, valid_until=None:
         
         if instrument == None or side == None or amount == None:
             print("Required arguments not provided: instrument / side / amount")
@@ -45,6 +45,8 @@ class ApiMethods:
                 message["reject_post_only"] = reject_post_only
             if reduce_only is not None:
                 message["reduce_only"] = reduce_only
+            if trigger is not None:
+                message["trigger"] = trigger                   
             if trigger_price is not None:
                 message["trigger_price"] = trigger_price
             if trigger_offset is not None:
