@@ -106,21 +106,32 @@ class Bot:
         """ Main thread will call user input function, which runs forever """
         
         while True:
-            if self.client.connected:
+            if self.client.connected and not self.input_parser.shutdown_input:
                 try:
                     self.input_parser.accept_user_input()
                 except KeyboardInterrupt:
-                    self.logger.info("KeyboardInterrupt - Shutting down.")
-                    self.save_bbo.shutdown = True
-                    self.client.shutdown()
-                    
-                    self.client.t1.join()
-                    self.save_bbo_thread.join()
-                    self.reconnection_thread.join()
-                    
+                    self.shutdown_all("KeyboardInterrupt")
                     break
                 
                 except Exception as e:
+                    error_type, error_tb, tb = sys.exc_info()
+                    filename, lineno, func_name, line = traceback.extract_tb(tb)[-1]
                     self.logger.info("Exception occured (main thread): {}".format(e))
+                    self.logger.info("Error details: {} {} {} {}".format(
+                        filename, lineno, func_name, line))                    
+            
+            elif self.input_parser.shutdown_input:
+                self.shutdown_all("CLI quit")
+                break
+            
             else:
                 time.sleep(0.5)
+                
+    def shutdown_all(self, reason):
+        self.logger.info("{} - Shutting down.".format(reason))
+        self.save_bbo.shutdown = True
+        self.client.shutdown()
+        
+        self.client.t1.join()
+        self.save_bbo_thread.join()
+        self.reconnection_thread.join()
