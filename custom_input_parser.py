@@ -101,9 +101,10 @@ class InputParser:
                 
                 if parsed:
                     for order in range(len(parsed)):
-                        
-                        if (parsed[order][0] and parsed[order][1]) or (parsed[order][1] == "private/cancel_all"): # THIS IS NOT THE CASE FOR CANCEL ALL CALL
-                            self.client.send_to_ws(parsed[order][0], parsed[order][1])
+                        data = parsed[order][0]
+                        call_type = parsed[order][1]
+                        if (data and call_type) or (call_type == "private/cancel_all"): # THIS IS NOT THE CASE FOR CANCEL ALL CALL
+                            self.client.send_to_ws(data, call_type)
                             
                             if len(parsed) > 1:
                                 if order != len(parsed) - 1:
@@ -121,12 +122,12 @@ class InputParser:
             if len(x) < 2:
                 raise InvalidInput
             
-            if x == "shutdown" or x == "quit":
+            elif x == "shutdown" or x == "quit":
                 self.shutdown_input = True
             
-            if x == "help":
+            elif x == "help":
                 self.show_syntax()
-                
+            
             elif x == "change instrument":
                 self.instrument_set = False
                 self.size_multiplier_set = False
@@ -145,7 +146,7 @@ class InputParser:
             
             elif x == "price":
                 print("Bid: {} --- Ask: {}".format(self.feed.fetch_btcusd_bbo(self.instrument, "bid"), 
-                                                   self.feed.fetch_btcusd_bbo(self.instrument, "ask")))            
+                                                   self.feed.fetch_btcusd_bbo(self.instrument, "ask")))
             
             elif x == "funds":
                 account = self.feed.get_account_data()
@@ -226,6 +227,39 @@ class InputParser:
                             # self.logger.info("Cancelling: {}".format(cancel_last_label))
                             del self.label_storage[-1]
                             return [self.api_methods.cancel_last(cancel_last_label, currency)]
+                    
+                    elif x[1] == "b":
+                        to_cancel = []
+                        orders = self.feed.orders.copy()
+                        for i in orders.keys():
+                            for j in orders[i].keys():
+                                if (orders[i][j]["direction"] == "buy" and 
+                                "stop" not in orders[i][j]["order_type"]):
+                                    label_to_cancel = orders[i][j]["label"]
+                                    to_cancel.append(self.api_methods.cancel_last(label_to_cancel, currency))
+                        return to_cancel
+                    
+                    elif x[1] == "s":
+                        to_cancel = []
+                        orders = self.feed.orders.copy()
+                        for i in orders.keys():
+                            for j in orders[i].keys():
+                                if (orders[i][j]["direction"] == "sell" and 
+                                "stop" not in orders[i][j]["order_type"]):
+                                    label_to_cancel = orders[i][j]["label"]
+                                    to_cancel.append(self.api_methods.cancel_last(label_to_cancel, currency))
+                        return to_cancel
+
+                    elif x[1:] == "stops":
+                        to_cancel = []
+                        orders = self.feed.orders.copy()
+                        for i in orders.keys():
+                            for j in orders[i].keys():
+                                if "stop" in orders[i][j]["order_type"]:
+                                    label_to_cancel = orders[i][j]["label"]
+                                    to_cancel.append(self.api_methods.cancel_last(label_to_cancel, currency))
+                        return to_cancel
+
                     
                 else:
                     raise InvalidInput            
@@ -338,6 +372,8 @@ class InputParser:
                         
                         if not price.isnumeric():
                             raise InvalidInput
+                        
+                        price = int(price)
                         
                         if ((side == "buy" and price <= self.feed.fetch_btcusd_bbo(self.instrument, "ask"))
                             or (side == "sell" and price >= self.feed.fetch_btcusd_bbo(self.instrument, "bid"))):
@@ -469,8 +505,12 @@ class InputParser:
               "\nfunds \norders \npositions"
               "\nactivate delta hedging \ndeactivate delta hedging "
               "\ndelta hedging status \nca (= cancel all) \ncc (= cancel last)"
+              "\ncb (= cancel all buys) \ncs (=cancel all sells)"
+              "\ncstops (= cancel all stop orders)"
               "\nshow size multiplier \nreset size multiplier"
               "\nchange instrument \nconnection status"
+              "\nprice (= show best bid and offer of current instrument)"
+              "\nshutdown / quit"
               )
     
 
