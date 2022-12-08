@@ -103,7 +103,7 @@ class DataFeed:
         if data["order_type"] != "rejected":
             
             # market and market_limit orders are not open, and are thus neglected
-            if data["order_type"] != "market" and data["order_type"] != "market_limit":
+            if data["order_type"] != "market":
                 
                 if instrument_name not in self.orders.keys():
                     self.orders[instrument_name] = {}
