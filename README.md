@@ -1,3 +1,12 @@
+# UPDATE (2022/12/22):
+Update / Rework coming in the next couple of days (probably after christmas holidays). The main adjustments are:
+- the spawning of several client connections, one for market data only, one for the manually (CLI) controlled account, another for a sub-account on which an entirely automated strategy runs. 
+- the **data_feed.py** module is split into two separate modules - one contains "public" market data only, the other holds account specific data. Each deribit sub-account spawns its own account-specific data_feed.py module. 
+- an additional module streaming data from another exchange to feed the automated strategy
+- an automated strategy entering and exiting trades based on a specific signal with a basic risk manager thread pausing the strategy and closing positions depending on continuously incoming data.
+- Numerous bug fixes and slight improvements, stabilization of websocket connections, a few extra supported CLI commands
+The new structure of the entire project allows for much simpler addition and integration of new modules, i.e. new strategies running on one sub-account on deribit.
+
 # Trading-Tools
 
 This project aims to assist in manual trading and to enable automated trading in Bitcoin Futures and Options contracts on the Deribit derivative exchange. Functional versions will be uploaded with an overview of features over time. It is work in progress - lots of work remains to be done and many aspects may surely be improved. It’s modular design should make it relatively easy to integrate future modules into the current groundwork. However, as complexity grows, it may be split into separate projects over time. 
