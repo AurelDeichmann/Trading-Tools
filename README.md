@@ -5,7 +5,9 @@ Update / Rework coming in the next couple of days (probably after christmas holi
 - an additional module streaming data from another exchange to feed the automated strategy
 - an automated strategy entering and exiting trades based on a specific signal with a basic risk manager thread pausing the strategy and closing positions depending on continuously incoming data.
 - Numerous bug fixes and slight improvements, stabilization of websocket connections, a few extra supported CLI commands
+- 
 The new structure of the entire project allows for much simpler addition and integration of new modules, i.e. new strategies running on one sub-account on deribit.
+
 
 # Trading-Tools
 
